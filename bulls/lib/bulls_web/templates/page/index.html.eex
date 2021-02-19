@@ -1,1 +1,11 @@
 
+<div class="row">
+  <div class="column">
+    <h2>Bulls and Cows</h2>
+
+    <%= form_for @conn, "/Bulls", fn f -> %>
+      <p>Enter guess: <%= text_input f, :x %></p>
+      <p><%= submit "submit" %></p>
+    <% end %>
+  </div>
+</div>

@@ -1,21 +1,28 @@
 import React, { useState } from "react";
 import random from "lodash/random";
 
+import { ch_join, ch_push } from './socket';
 
 function Bulls() {
- 
-  const [state, ssetState] = useState({
+
+  const [state, setState] = useState({
     secret : getRandomNum(),
     guesses: [],
   });
   const [text, setText] = useState("");
   const [warning, setWarning] = useState("");
-  
+
 
   let {secret, guesses} = state;
 
+  let view = secret.split('');
   let lives = lives_left(secret, guesses);
   let bulls = bullsandcows(secret, guesses);
+
+
+  useEffect(() => {
+     ch_join(setState);
+   });
 
   function makeGuesses(arr) {
     let guesses = arr;
@@ -41,14 +48,15 @@ function Bulls() {
     numArray.splice(index, 1);
     index = random(0, 6);
     four = numArray[index];
-    number = one.toString() + two.toString() 
+    number = one.toString() + two.toString()
             + three.toString() + four.toString();
     return number;
   }
 
   function updateText(ev) {
     let vv = ev.target.value;
-    setText(vv);
+    ch_push({number: text});
+  //  setText(vv);
   }
 
   function noLetters(guess) {
@@ -87,7 +95,7 @@ function Bulls() {
   function keyPress(ev) {
     if (ev.key === "Enter") {
       guess();
-      
+
     }
   }
 
@@ -183,7 +191,7 @@ function Bulls() {
         />
         <button onClick={guess}>Guess</button>
       </p>
-      
+
       <p>
         <button onClick={() => reloadGame()}>
           Reset
@@ -207,7 +215,7 @@ function bullsandcows(secret, guesses) {
     let bulls = 0;
     let cows = 0;
     let returnBC = "";
-  
+
     for (let i = 0; i < 4; i++) {
       if (currArray[i] === correctNum[i]) {
         bulls = bulls + 1;
